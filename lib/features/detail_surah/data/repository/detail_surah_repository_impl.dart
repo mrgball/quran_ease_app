@@ -1,19 +1,19 @@
 import 'package:dio/dio.dart';
-import 'package:quran_ease/core/config/global.dart';
 import 'package:quran_ease/core/helper/dio_helper.dart';
 import 'package:quran_ease/core/utils/app_exceptions.dart';
 import 'package:quran_ease/core/utils/injector.dart';
-import 'package:quran_ease/features/home/domain/repository/home_repository.dart';
+import 'package:quran_ease/features/detail_surah/domain/repository/detail_surah_repository.dart';
 
-class HomeRepositoryImpl extends HomeRepository {
+class DetailSurahRepositoryImpl extends DetailSurahRepository {
   final DioHelper _dioHelper = locator<DioHelper>();
 
   @override
-  Future<List<dynamic>> fetchSurah(Map<String, dynamic>? params) async {
+  Future<Map<String, dynamic>> fetchDetailSurah(
+    Map<String, dynamic>? params,
+  ) async {
     try {
       final response = await _dioHelper.getRequest(
-        '/surat',
-        queryParameters: params,
+        '/surat/${params?['id'] ?? 0}',
       );
 
       if (response.data['code'] != 200) {
@@ -22,7 +22,7 @@ class HomeRepositoryImpl extends HomeRepository {
 
       return response.data['data'] ?? [];
     } on DioException catch (e) {
-      throw DataException(message: e.response?.data['message'] ?? gPesanError);
+      throw DataException(message: e.response?.data['meta']['message']);
     } catch (e) {
       rethrow;
     }

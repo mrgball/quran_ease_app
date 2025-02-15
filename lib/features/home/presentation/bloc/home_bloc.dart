@@ -33,7 +33,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         listSurah: listSurah,
       ));
     } catch (e, s) {
-      print('asdsadasdsa: $e || $s');
+      print('eread : $e || $s');
       emit(state.copyWith(status: BlocStatus.error));
     }
   }

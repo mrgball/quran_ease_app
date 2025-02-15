@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:quran_ease/core/config/enum.dart';
 import 'package:quran_ease/core/config/extension.dart';
+import 'package:quran_ease/core/config/route.dart';
+import 'package:quran_ease/features/home/domain/entity/surah.dart';
 import 'package:quran_ease/features/home/presentation/bloc/home_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(_homeBloc.state.listSurah.length);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -31,11 +34,128 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildHeader(),
               SizedBox(height: context.dh * 0.05),
-              _buildCard()
+              _buildCard(),
+              SizedBox(height: context.dh * 0.02),
+              BlocSelector<HomeBloc, HomeState, HomeState>(
+                selector: (state) => state,
+                builder: (context, state) {
+                  if (state.status == BlocStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state.status == BlocStatus.error) {
+                    return const Center(
+                      child: Text('tidak ada data'),
+                    );
+                  }
+
+                  return _buildListSurah(state);
+                },
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildListSurah(HomeState state) {
+    return Expanded(
+      child: ListView.separated(
+        itemCount: state.listSurah.length,
+        separatorBuilder: (context, index) => Divider(
+          thickness: 1,
+          color: context.greyBackground,
+        ),
+        itemBuilder: (context, index) {
+          final surah = state.listSurah[index];
+
+          return GestureDetector(
+            onTap: () => Navigator.of(context).pushNamed(
+              MyRouter.routeDetailSurah,
+              arguments: {
+                'surah': surah,
+              },
+            ),
+            onLongPress: () => _showModalDetail(surah),
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(
+                backgroundColor: context.primaryShade100,
+                child: Center(
+                  child: Text(
+                    '${index + 1}',
+                    style: context.text.labelSmall?.copyWith(
+                      color: context.primary,
+                    ),
+                  ),
+                ),
+              ),
+              title: Text(
+                '${surah.namaLatin} (${surah.jmlAyat})',
+                style: context.text.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: context.black,
+                ),
+              ),
+              subtitle: Text(
+                surah.arti,
+                style:
+                    context.text.labelSmall?.copyWith(color: context.greyText),
+              ),
+              trailing: Text(
+                surah.nama,
+                style: context.text.displaySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: context.primary,
+                  fontSize: 32,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showModalDetail(Surah surah) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (builder) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          padding: const EdgeInsets.all(16),
+          height: context.dh * 0.5,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Deskripsi:',
+                  style:
+                      context.text.bodyLarge?.copyWith(color: context.greyText),
+                ),
+                const SizedBox(height: 16),
+                HtmlWidget(surah.deskripsi),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

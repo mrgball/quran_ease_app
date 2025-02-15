@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:quran_ease/core/shared/screen/splash_screen.dart';
+import 'package:quran_ease/features/detail_surah/presentation/screen/detail_surah_screen.dart';
 import 'package:quran_ease/features/home/presentation/screen/home_screen.dart';
-import 'package:quran_ease/main.dart';
 
 class MyRouter {
   // DEFINING ROUTES HERE:
   static const String routeHome = '/home';
+  static const String routeDetailSurah = '/detail-surah';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     late Widget Function(BuildContext) screenDestination;
@@ -18,8 +20,12 @@ class MyRouter {
       case routeHome:
         screenDestination = (_) => const HomeScreen();
         break;
+      case routeDetailSurah:
+        screenDestination = (_) => DetailSurahScreen(
+              surah: arguments?['surah'],
+            );
       default:
-        screenDestination = (_) => const MyApp();
+        screenDestination = (_) => const SplashScreen();
         break;
     }
 

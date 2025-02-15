@@ -7,7 +7,7 @@ class GetSurahUseCase extends UseCase<List<dynamic>, Map<String, dynamic>> {
   GetSurahUseCase(this._homeRepository);
 
   @override
-  Future<List> call(Map<String, dynamic> params) {
+  Future<List<dynamic>> call(Map<String, dynamic> params) {
     return _homeRepository.fetchSurah(params);
   }
 }

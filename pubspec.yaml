@@ -35,7 +35,9 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.0.0
+  # flutter_html_to_pdf: ^0.7.0
   flutter_svg: ^2.0.17
+  flutter_widget_from_html: ^0.15.3
   get_it: ^8.0.3
   requests_inspector: ^4.2.1
 

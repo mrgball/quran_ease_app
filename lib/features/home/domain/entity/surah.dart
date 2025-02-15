@@ -8,7 +8,10 @@ class Surah extends Equatable {
   final String tempatTurun;
   final String arti;
   final String deskripsi;
-  final Map<String, String> audioFull;
+  final Map<String, dynamic> audioFull;
+  final List<Ayat>? listAyat;
+  final Map<String, Surah>? surahSebelumnya;
+  final Map<String, Surah>? surahSelanjutnya;
 
   const Surah({
     required this.nomor,
@@ -19,6 +22,9 @@ class Surah extends Equatable {
     required this.arti,
     required this.deskripsi,
     required this.audioFull,
+    this.listAyat = const [],
+    this.surahSebelumnya = const {},
+    this.surahSelanjutnya = const {},
   });
 
   @override
@@ -31,5 +37,30 @@ class Surah extends Equatable {
         arti,
         deskripsi,
         audioFull,
+      ];
+}
+
+class Ayat extends Equatable {
+  final int nomorAyat;
+  final String arab;
+  final String latin;
+  final String terjemahan;
+  final Map<String, dynamic> audio;
+
+  const Ayat({
+    required this.nomorAyat,
+    required this.arab,
+    required this.latin,
+    required this.terjemahan,
+    required this.audio,
+  });
+
+  @override
+  List<Object?> get props => [
+        nomorAyat,
+        arab,
+        latin,
+        terjemahan,
+        audio,
       ];
 }

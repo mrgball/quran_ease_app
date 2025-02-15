@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:requests_inspector/requests_inspector.dart';
 
 import '../config/constant.dart';
 
@@ -16,7 +17,7 @@ class DioHelper {
 
   Dio get _dio => Dio(_baseOptions)
     ..interceptors.addAll([
-      // RequestsInspectorInterceptor(),
+      RequestsInspectorInterceptor(),
       // DioLoggingInterceptor(),
       // PrettyDioLogger(
       //   compact: kDebugMode,
