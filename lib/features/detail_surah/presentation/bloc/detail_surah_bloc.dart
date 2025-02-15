@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:quran_ease/core/config/enum.dart';
@@ -51,8 +49,7 @@ class DetailSurahBloc extends Bloc<DetailSurahEvent, DetailSurahState> {
         status: BlocStatus.success,
         detailSurah: detailSurah,
       ));
-    } catch (e, s) {
-      print('asdoasdjasidh: $e || $s');
+    } catch (e) {
       emit(state.copyWith(status: BlocStatus.error));
     }
   }
