@@ -20,7 +20,7 @@ class DetailSurahRepositoryImpl extends DetailSurahRepository {
         throw DataException(message: response.data['message']);
       }
 
-      return response.data['data'] ?? [];
+      return response.data;
     } on DioException catch (e) {
       throw DataException(message: e.response?.data['meta']['message']);
     } catch (e) {

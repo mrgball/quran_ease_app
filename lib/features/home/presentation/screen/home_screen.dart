@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: context.text.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: context.primary,
-                  fontSize: 32,
+                  fontSize: 26,
                 ),
               ),
             ),
@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCard() {
     return Container(
       padding: const EdgeInsets.all(25),
-      height: context.dh * 0.2,
+      height: context.dh * 0.22,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),

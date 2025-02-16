@@ -6,14 +6,20 @@ class DetailSurahState extends Equatable {
 
   // DATA
   final Surah detailSurah;
+  final SuratNavigation? suratSebelumnya;
+  final SuratNavigation? suratSelanjutnya;
 
   DetailSurahState copyWith({
     BlocStatus? status,
     Surah? detailSurah,
+    SuratNavigation? suratSebelumnya,
+    SuratNavigation? suratSelanjutnya,
   }) =>
       DetailSurahState(
         status: status ?? this.status,
         detailSurah: detailSurah ?? this.detailSurah,
+        suratSebelumnya: suratSebelumnya ?? this.suratSebelumnya,
+        suratSelanjutnya: suratSelanjutnya ?? this.suratSelanjutnya,
       );
 
   const DetailSurahState({
@@ -28,8 +34,15 @@ class DetailSurahState extends Equatable {
       deskripsi: '',
       audioFull: {},
     ),
+    this.suratSebelumnya,
+    this.suratSelanjutnya,
   });
 
   @override
-  List<Object> get props => [status, detailSurah];
+  List<Object?> get props => [
+        status,
+        detailSurah,
+        suratSebelumnya,
+        suratSelanjutnya,
+      ];
 }

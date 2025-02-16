@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:quran_ease/core/config/enum.dart';
 import 'package:quran_ease/core/config/extension.dart';
+import 'package:quran_ease/core/config/route.dart';
 import 'package:quran_ease/features/detail_surah/presentation/bloc/detail_surah_bloc.dart';
 import 'package:quran_ease/features/home/domain/entity/surah.dart';
 
@@ -16,6 +16,15 @@ class DetailSurahScreen extends StatefulWidget {
 
 class _DetailSurahScreenState extends State<DetailSurahScreen> {
   late final DetailSurahBloc _detailSurahBloc = context.read<DetailSurahBloc>();
+  late int currentSurahId;
+
+  @override
+  void didUpdateWidget(covariant DetailSurahScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.surah.nomor != widget.surah.nomor) {
+      _detailSurahBloc.add(GetDetailSurahEvent(id: widget.surah.nomor));
+    }
+  }
 
   @override
   void initState() {
@@ -38,7 +47,7 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                     colors: [
                       context.primary,
                       context.primaryShade100,
-                    ], // Warna gradient hijau
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -49,49 +58,107 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(25),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child:
-                            const Icon(Icons.arrow_back, color: Colors.white),
-                      ), // Icon Back
-                      Text(
-                        widget.surah.nama,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Icon(Icons.more_vert, color: Colors.white),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Tulisan di tengah header
-              Positioned(
-                top: 200,
-                left: 0,
-                right: 0,
-                child: Center(
                   child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SvgPicture.asset(
-                        'assets/bismillah.svg',
-                        width: 500,
-                        height: 500,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: const Icon(Icons.arrow_back,
+                                color: Colors.white),
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                widget.surah.namaLatin,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.surah.nama,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Icon(Icons.more_vert, color: Colors.white),
+                        ],
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 24),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.arrow_circle_left_outlined,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Surat Sebelumnya',
+                                        style: context.text.bodySmall?.copyWith(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () => Navigator.of(context).pushNamed(
+                                    MyRouter.routeDetailSurah,
+                                    arguments: {
+                                      'surah': widget.surah,
+                                    },
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Surat Selanjutnya',
+                                        style: context.text.bodySmall?.copyWith(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Icon(
+                                        Icons.arrow_circle_right_outlined,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ]),
                     ],
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: context.dh * 0.04),
+          SizedBox(height: context.dh * 0.02),
           _buildListAyat(),
         ],
       ),
@@ -110,11 +177,52 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
           return const Center(child: Text('tidak ada data'));
         }
 
-        /// TODO: DISPLAYING AYAT
+        final listAyat = state.detailSurah.listAyat;
+
         return Expanded(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25),
-            child: Text('ini list ayat'),
+          child: ListView.separated(
+            padding: const EdgeInsets.all(25),
+            shrinkWrap: true,
+            itemCount: listAyat.length,
+            separatorBuilder: (context, index) => Divider(
+              thickness: 2,
+              color: context.greyBackground,
+            ),
+            itemBuilder: (context, index) {
+              final ayat = listAyat[index];
+
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: context.primaryShade100,
+                      child: Text(
+                        '${index + 1}',
+                        style: context.text.bodySmall?.copyWith(
+                          fontSize: 12,
+                          color: context.primary,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: context.dw * 0.2),
+                    Flexible(
+                      child: Text(
+                        ayat.arab,
+                        style: context.text.titleLarge?.copyWith(
+                          color: context.black,
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },

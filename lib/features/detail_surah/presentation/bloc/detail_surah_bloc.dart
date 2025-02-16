@@ -4,6 +4,8 @@ import 'package:quran_ease/core/config/enum.dart';
 import 'package:quran_ease/core/utils/injector.dart';
 import 'package:quran_ease/features/detail_surah/domain/usecase/detail_surah_usecase.dart';
 import 'package:quran_ease/features/home/data/model/surah_model.dart';
+import 'package:quran_ease/features/home/data/model/surat_navigation_model.dart';
+import 'package:quran_ease/features/home/domain/entity/surat_navigation.dart';
 
 import '../../../home/domain/entity/surah.dart';
 
@@ -43,11 +45,24 @@ class DetailSurahBloc extends Bloc<DetailSurahEvent, DetailSurahState> {
         _dataDetailSurah[keyDetailSurah] = null;
       }
 
-      Surah detailSurah = SurahModel.fromJson(response);
+      Surah detailSurah = SurahModel.fromJson(response['data']);
+
+      SuratNavigation? suratSebelumnya = (response['data']['suratSebelumnya'] ==
+              false)
+          ? null
+          : SuratNavigationModel.fromJson(response['data']['suratSebelumnya']);
+
+      SuratNavigation? suratSelanjutnya = (response['data']
+                  ['suratSelanjutnya'] ==
+              false)
+          ? null
+          : SuratNavigationModel.fromJson(response['data']['suratSelanjutnya']);
 
       emit(state.copyWith(
         status: BlocStatus.success,
         detailSurah: detailSurah,
+        suratSebelumnya: suratSebelumnya,
+        suratSelanjutnya: suratSelanjutnya,
       ));
     } catch (e) {
       emit(state.copyWith(status: BlocStatus.error));
