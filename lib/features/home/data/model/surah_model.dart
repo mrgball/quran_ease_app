@@ -1,4 +1,3 @@
-import 'package:quran_ease/features/home/data/model/surat_navigation_model.dart';
 import 'package:quran_ease/features/home/domain/entity/surah.dart';
 
 import 'ayat_model.dart';

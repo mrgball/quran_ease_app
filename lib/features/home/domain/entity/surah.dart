@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:quran_ease/features/home/data/model/surat_navigation_model.dart';
 import 'package:quran_ease/features/home/domain/entity/ayat.dart';
-import 'package:quran_ease/features/home/domain/entity/surat_navigation.dart';
 
 class Surah extends Equatable {
   final int nomor;
