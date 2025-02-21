@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+// Mockup design size
+const mockupHeight = 852;
+const mockupWidth = 393;
+
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
@@ -14,17 +18,28 @@ extension StringExtension on String {
   }
 }
 
+extension DoubleEx on double {
+  double dp({required double parentWidth}) => this / mockupWidth * parentWidth;
+
+  double h({required double parentHeight}) =>
+      this / mockupHeight * parentHeight;
+}
+
 extension ScreenUtil on BuildContext {
   TextTheme get text => Theme.of(this).textTheme;
 
   // Device info
   double get dw => MediaQuery.of(this).size.width;
   double get dh => MediaQuery.of(this).size.height;
+  double dp(double size) => size / mockupWidth * dw;
 
   // Responsive Helper
   bool get isMobile => dw < 600;
   bool get isTablet => dw >= 600;
   bool get isDesktop => dw >= 1100;
+
+  double get sw => mockupWidth / dw;
+  double get sh => mockupHeight / dh;
 
   // Device Orientation
   Orientation get orientation => MediaQuery.of(this).orientation;

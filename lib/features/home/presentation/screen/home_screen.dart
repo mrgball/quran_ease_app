@@ -5,6 +5,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:quran_ease/core/config/enum.dart';
 import 'package:quran_ease/core/config/extension.dart';
 import 'package:quran_ease/core/config/route.dart';
+import 'package:quran_ease/core/shared/widget/shimmer_list_tiles.dart';
 import 'package:quran_ease/features/home/domain/entity/surah.dart';
 import 'package:quran_ease/features/home/presentation/bloc/home_bloc.dart';
 
@@ -40,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 selector: (state) => state,
                 builder: (context, state) {
                   if (state.status == BlocStatus.loading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return _buildLoading();
                   }
 
                   if (state.status == BlocStatus.error) {
@@ -54,6 +55,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoading() {
+    return const Expanded(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: ShimmerListTiles(
+          jumlahItem: 10,
+          shrinkWrap: true,
         ),
       ),
     );

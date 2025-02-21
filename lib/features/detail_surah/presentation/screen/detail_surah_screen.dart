@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quran_ease/core/config/enum.dart';
 import 'package:quran_ease/core/config/extension.dart';
 import 'package:quran_ease/core/config/route.dart';
+import 'package:quran_ease/core/shared/widget/shimmer_loading.dart';
 import 'package:quran_ease/features/detail_surah/presentation/bloc/detail_surah_bloc.dart';
 import 'package:quran_ease/features/home/domain/entity/ayat.dart';
 import 'package:quran_ease/features/home/domain/entity/surah.dart';
@@ -303,9 +304,10 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
 
   Widget _buildListAyat(DetailSurahState state) {
     final listAyat = state.detailSurah.listAyat;
+    print('state list mayat: ${listAyat.length}');
 
     if (state.status == BlocStatus.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildLoading(listAyat.length);
     }
 
     if (state.status == BlocStatus.error) {
@@ -373,6 +375,24 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                 ],
               ),
             ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoading(int? totalItem) {
+    return Expanded(
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+        shrinkWrap: true,
+        itemCount: totalItem == 0 || totalItem == null ? 5 : totalItem,
+        separatorBuilder: (context, index) => const SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          return ShimmerWidget.rounded(
+            width: double.infinity,
+            height: context.dp(125),
+            borderRadius: BorderRadius.circular(12),
           );
         },
       ),
