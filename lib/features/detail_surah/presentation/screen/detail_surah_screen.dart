@@ -1,14 +1,15 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:quran_ease/core/config/enum.dart';
 import 'package:quran_ease/core/config/extension.dart';
-import 'package:quran_ease/core/config/route.dart';
+import 'package:quran_ease/core/shared/widget/refresher/custom_smart_refresher.dart';
 import 'package:quran_ease/core/shared/widget/shimmer_loading.dart';
 import 'package:quran_ease/features/detail_surah/presentation/bloc/detail_surah_bloc.dart';
 import 'package:quran_ease/features/home/domain/entity/ayat.dart';
 import 'package:quran_ease/features/home/domain/entity/surah.dart';
-import 'package:quran_ease/features/home/domain/entity/surat_navigation.dart';
+import 'package:quran_ease/features/home/presentation/bloc/home_bloc.dart';
 
 class DetailSurahScreen extends StatefulWidget {
   final Surah surah;
@@ -21,41 +22,40 @@ class DetailSurahScreen extends StatefulWidget {
 class _DetailSurahScreenState extends State<DetailSurahScreen> {
   late final DetailSurahBloc _detailSurahBloc = context.read<DetailSurahBloc>();
   final AudioPlayer _audioPlayer = AudioPlayer();
-  String? _currentlyPlaying;
+  final ValueNotifier<String?> _currentlyPlaying = ValueNotifier(null);
+  final RefreshController _refreshCont = RefreshController();
 
   @override
   void didUpdateWidget(covariant DetailSurahScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.surah.nomor != widget.surah.nomor) {
-      _detailSurahBloc.add(GetDetailSurahEvent(id: widget.surah.nomor));
+      _onRefresh(false);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _detailSurahBloc.add(GetDetailSurahEvent(id: widget.surah.nomor));
+    _onRefresh(false);
+    _audioPlayer.onPlayerComplete.listen((_) {
+      _currentlyPlaying.value == null;
+    });
+
+    context.read<HomeBloc>().add(SetLastReadEvent(surah: widget.surah));
   }
 
-  void _onChangeSurah(SuratNavigation suratTarget) {
-    if (suratTarget.nomor == widget.surah.nomor) {
-      Navigator.of(context).pushNamed(MyRouter.routeDetailSurah, arguments: {
-        'surah': widget.surah,
-      });
-    }
+  void _onRefresh([bool isRefresh = true]) {
+    _detailSurahBloc
+        .add(GetDetailSurahEvent(id: widget.surah.nomor, isRefresh: isRefresh));
   }
 
   void _playAudio(String key, String url) async {
-    if (_currentlyPlaying == key) {
+    if (_currentlyPlaying.value == key) {
       await _audioPlayer.stop();
-      setState(() {
-        _currentlyPlaying = null;
-      });
+      _currentlyPlaying.value = null;
     } else {
       await _audioPlayer.play(UrlSource(url));
-      setState(() {
-        _currentlyPlaying = key;
-      });
+      _currentlyPlaying.value = key;
     }
   }
 
@@ -85,7 +85,7 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
               Stack(
                 children: [
                   Container(
-                    height: context.dh * 0.20,
+                    height: context.dh * 0.15,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -102,7 +102,10 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                   // AppBar Transparan
                   SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.all(25),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 25,
+                        vertical: 10,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -140,73 +143,6 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                             ],
                           ),
                           const SizedBox(height: 32),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-                          //     Row(
-                          //       mainAxisAlignment:
-                          //           MainAxisAlignment.spaceBetween,
-                          //       children: [
-                          //         GestureDetector(
-                          //           onTap: () {
-                          //             if (state.suratSebelumnya == null) return;
-
-                          //             _onChangeSurah(state.suratSebelumnya!);
-                          //           },
-                          //           child: Row(
-                          //             children: [
-                          //               const Icon(
-                          //                 Icons.arrow_circle_left_outlined,
-                          //                 color: Colors.white,
-                          //                 size: 18,
-                          //               ),
-                          //               const SizedBox(width: 8),
-                          //               Text(
-                          //                 'Surat Sebelumnya',
-                          //                 style:
-                          //                     context.text.bodySmall?.copyWith(
-                          //                   color: Colors.white,
-                          //                 ),
-                          //               )
-                          //             ],
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //     Row(
-                          //       mainAxisAlignment:
-                          //           MainAxisAlignment.spaceBetween,
-                          //       children: [
-                          //         GestureDetector(
-                          //           onTap: () {
-                          //             if (state.suratSelanjutnya == null) {
-                          //               return;
-                          //             }
-
-                          //             _onChangeSurah(state.suratSelanjutnya!);
-                          //           },
-                          //           child: Row(
-                          //             children: [
-                          //               Text(
-                          //                 'Surat Selanjutnya',
-                          //                 style:
-                          //                     context.text.bodySmall?.copyWith(
-                          //                   color: Colors.white,
-                          //                 ),
-                          //               ),
-                          //               const SizedBox(width: 8),
-                          //               const Icon(
-                          //                 Icons.arrow_circle_right_outlined,
-                          //                 color: Colors.white,
-                          //                 size: 18,
-                          //               ),
-                          //             ],
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ],
-                          // ),
                         ],
                       ),
                     ),
@@ -267,7 +203,6 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                   style:
                       context.text.bodyLarge?.copyWith(color: context.greyText),
                 ),
-                const SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(
                     itemCount: ayat.audio.length,
@@ -275,20 +210,23 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                       String key = ayat.audio.keys.elementAt(index);
                       String url = ayat.audio[key]!;
 
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(extractQariName(url)),
-                        trailing: IconButton(
-                          icon: Icon(
-                            _currentlyPlaying == key
-                                ? Icons.stop
-                                : Icons.play_arrow,
-                            color: _currentlyPlaying == key
-                                ? Colors.red
-                                : Colors.blue,
-                          ),
-                          onPressed: () => _playAudio(key, url),
-                        ),
+                      return ValueListenableBuilder<String?>(
+                        valueListenable: _currentlyPlaying,
+                        builder: (context, value, child) {
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(extractQariName(url)),
+                            trailing: IconButton(
+                              icon: Icon(
+                                (value == key) ? Icons.stop : Icons.play_arrow,
+                                color: (value == key)
+                                    ? Colors.grey
+                                    : context.primary,
+                              ),
+                              onPressed: () => _playAudio(key, url),
+                            ),
+                          );
+                        },
                       );
                     },
                   ),
@@ -303,7 +241,6 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
 
   Widget _buildListAyat(DetailSurahState state) {
     final listAyat = state.detailSurah.listAyat;
-    print('state list mayat: ${listAyat.length}');
 
     if (state.status == BlocStatus.loading) {
       return _buildLoading(listAyat.length);
@@ -314,68 +251,72 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
     }
 
     return Expanded(
-      child: ListView.separated(
-        padding: const EdgeInsets.all(25),
-        shrinkWrap: true,
-        itemCount: listAyat.length,
-        separatorBuilder: (context, index) => Divider(
-          thickness: 2,
-          color: context.greyBackground,
-        ),
-        itemBuilder: (context, index) {
-          final ayat = listAyat[index];
+      child: CustomSmartRefresher(
+        controller: _refreshCont,
+        onRefresh: _onRefresh,
+        child: ListView.separated(
+          padding: const EdgeInsets.all(25),
+          shrinkWrap: true,
+          itemCount: listAyat.length,
+          separatorBuilder: (context, index) => Divider(
+            thickness: 2,
+            color: context.greyBackground,
+          ),
+          itemBuilder: (context, index) {
+            final ayat = listAyat[index];
 
-          return GestureDetector(
-            onTap: () {},
-            onLongPress: () => _showModalDetail(ayat),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: context.primaryShade100,
-                    child: Text(
-                      '${index + 1}',
-                      style: context.text.bodySmall?.copyWith(
-                        fontSize: 10,
-                        color: context.primary,
+            return GestureDetector(
+              onTap: () {},
+              onDoubleTap: () => _showModalDetail(ayat),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: context.primaryShade100,
+                      child: Text(
+                        '${index + 1}',
+                        style: context.text.bodySmall?.copyWith(
+                          fontSize: 10,
+                          color: context.primary,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: context.dw * 0.2),
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          ayat.arab,
-                          style: context.text.titleLarge?.copyWith(
-                            color: context.black,
-                            fontSize: 30,
+                    SizedBox(width: context.dw * 0.2),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            ayat.arab,
+                            style: context.text.titleLarge?.copyWith(
+                              color: context.black,
+                              fontSize: 30,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
                           ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.right,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          ayat.latin,
-                          style: context.text.labelSmall?.copyWith(
-                            fontSize: 12,
-                            color: context.greyText,
+                          const SizedBox(height: 12),
+                          Text(
+                            ayat.latin,
+                            style: context.text.labelSmall?.copyWith(
+                              fontSize: 12,
+                              color: context.greyText,
+                            ),
+                            textAlign: TextAlign.left,
                           ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

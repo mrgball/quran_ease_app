@@ -26,10 +26,12 @@ class HomeState extends Equatable {
   HomeState copyWith({
     BlocStatus? status,
     List<Surah>? listSurah,
+    Surah? lastReadSurah,
   }) {
     return HomeState(
       status: status ?? this.status,
       listSurah: listSurah ?? this.listSurah,
+      lastReadSurah: lastReadSurah ?? this.lastReadSurah,
     );
   }
 
@@ -37,5 +39,6 @@ class HomeState extends Equatable {
   List<Object?> get props => [
         status,
         listSurah,
+        lastReadSurah,
       ];
 }

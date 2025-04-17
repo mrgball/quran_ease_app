@@ -15,10 +15,10 @@ class GetSurahEvent extends HomeEvent {
   List<Object?> get props => [false];
 }
 
-class LastReadEvent extends HomeEvent {
+class SetLastReadEvent extends HomeEvent {
   final Surah surah;
 
-  const LastReadEvent({required this.surah});
+  const SetLastReadEvent({required this.surah});
 
   @override
   List<Object?> get props => [surah];

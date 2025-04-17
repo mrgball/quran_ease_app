@@ -9,8 +9,13 @@ class DetailSurahEvent extends Equatable {
 
 class GetDetailSurahEvent extends DetailSurahEvent {
   final int id;
-  const GetDetailSurahEvent({required this.id});
+  final bool isRefresh;
+
+  const GetDetailSurahEvent({
+    required this.id,
+    this.isRefresh = false,
+  });
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [id, isRefresh];
 }

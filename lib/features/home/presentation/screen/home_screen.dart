@@ -121,12 +121,14 @@ class _HomeScreenState extends State<HomeScreen> {
             final surah = state.listSurah[index];
 
             return GestureDetector(
-              onTap: () => Navigator.of(context).pushNamed(
-                MyRouter.routeDetailSurah,
-                arguments: {
-                  'surah': surah,
-                },
-              ),
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  MyRouter.routeDetailSurah,
+                  arguments: {
+                    'surah': surah,
+                  },
+                );
+              },
               onLongPress: () => _showModalDetail(surah),
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -241,8 +243,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCard() {
     return Container(
-      padding: const EdgeInsets.all(25),
-      height: context.dh * 0.19,
+      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+      height: context.dh * 0.20,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -258,47 +260,94 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Last Read',
-                style: context.text.bodyMedium?.copyWith(
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'ةحتافلا',
-                style: context.text.headlineLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.white,
-                ),
-                child: Text(
-                  'Continue',
-                  style: context.text.bodySmall?.copyWith(
-                    color: context.primary,
+          /// 1. Make this Expanded so it can wrap text without overflow
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Last Read',
+                  style: context.text.bodyMedium?.copyWith(
+                    color: Colors.white,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              )
-            ],
+                const SizedBox(height: 12),
+                BlocBuilder<HomeBloc, HomeState>(
+                  buildWhen: (previous, current) =>
+                      previous.lastReadSurah != current.lastReadSurah,
+                  builder: (context, state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          state.lastReadSurah.nama,
+                          style: context.text.headlineLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          state.lastReadSurah.namaLatin,
+                          style: context.text.headlineLarge?.copyWith(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      MyRouter.routeDetailSurah,
+                      arguments: {
+                        'surah': _homeBloc.state.lastReadSurah,
+                      },
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Colors.white,
+                    ),
+                    child: Text(
+                      'Continue',
+                      style: context.text.bodySmall?.copyWith(
+                        color: context.primary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
+
+          const SizedBox(width: 12), // optional space between text & image
+
+          /// 2. Limit image width and height so it won’t overflow
           SvgPicture.asset(
             'assets/objects.svg',
-            height: context.dh * 0.15,
+            height: context.dh * 0.13,
+            width: context.dw * 0.2, // Limit width too
+            fit: BoxFit.contain,
           ),
         ],
       ),

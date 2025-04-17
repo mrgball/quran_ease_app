@@ -12,6 +12,14 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(const HomeState()) {
     on<GetSurahEvent>(_onGetSurah);
+    on<SetLastReadEvent>(_onSetLastRead);
+  }
+
+  void _onSetLastRead(
+    SetLastReadEvent event,
+    Emitter emit,
+  ) {
+    emit(state.copyWith(lastReadSurah: event.surah));
   }
 
   void _onGetSurah(

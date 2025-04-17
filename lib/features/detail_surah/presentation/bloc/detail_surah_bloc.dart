@@ -27,7 +27,7 @@ class DetailSurahBloc extends Bloc<DetailSurahEvent, DetailSurahState> {
     try {
       emit(state.copyWith(status: BlocStatus.loading));
 
-      if (_dataDetailSurah.containsKey(keyDetailSurah)) {
+      if (!event.isRefresh && _dataDetailSurah.containsKey(keyDetailSurah)) {
         emit(state.copyWith(
           status: BlocStatus.success,
           detailSurah: _dataDetailSurah[keyDetailSurah],
