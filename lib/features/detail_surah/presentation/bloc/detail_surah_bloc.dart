@@ -39,7 +39,7 @@ class DetailSurahBloc extends Bloc<DetailSurahEvent, DetailSurahState> {
         'id': event.id,
       });
 
-      if (response.isEmpty) throw 'data detail tidak ditemukan';
+      if (response.isEmpty) throw 'Data detail surah tidak ditemukan';
 
       if (!_dataDetailSurah.containsKey(keyDetailSurah)) {
         _dataDetailSurah[keyDetailSurah] = null;

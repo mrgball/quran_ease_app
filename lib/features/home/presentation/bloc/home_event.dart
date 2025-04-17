@@ -8,8 +8,18 @@ class HomeEvent extends Equatable {
 }
 
 class GetSurahEvent extends HomeEvent {
-  const GetSurahEvent();
+  final bool isRefresh;
+  const GetSurahEvent({this.isRefresh = false});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [false];
+}
+
+class LastReadEvent extends HomeEvent {
+  final Surah surah;
+
+  const LastReadEvent({required this.surah});
+
+  @override
+  List<Object?> get props => [surah];
 }

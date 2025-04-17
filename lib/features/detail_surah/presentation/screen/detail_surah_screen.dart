@@ -122,7 +122,7 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                                     widget.surah.namaLatin,
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 14,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -130,7 +130,7 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                                     widget.surah.nama,
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 14,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -222,7 +222,6 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
   }
 
   void _showModalDetail(Ayat ayat) {
-    print('state audio: ${ayat.audio}');
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,

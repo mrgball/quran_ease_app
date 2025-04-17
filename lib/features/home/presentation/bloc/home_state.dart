@@ -6,10 +6,21 @@ class HomeState extends Equatable {
 
   // DATAS
   final List<Surah> listSurah;
+  final Surah lastReadSurah;
 
   const HomeState({
     this.status = BlocStatus.initial,
     this.listSurah = const [],
+    this.lastReadSurah = const Surah(
+      nomor: 0,
+      nama: '',
+      namaLatin: '',
+      jmlAyat: 0,
+      tempatTurun: '',
+      arti: '',
+      deskripsi: '',
+      audioFull: {},
+    ),
   });
 
   HomeState copyWith({
