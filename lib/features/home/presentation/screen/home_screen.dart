@@ -11,6 +11,8 @@ import 'package:quran_ease/core/shared/widget/shimmer_list_tiles.dart';
 import 'package:quran_ease/features/home/domain/entity/surah.dart';
 import 'package:quran_ease/features/home/presentation/bloc/home_bloc.dart';
 
+import '../widget/surah_search_delegate.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -42,7 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildHeader(),
               SizedBox(height: context.dh * 0.05),
-              _buildCard(),
+              BlocSelector<HomeBloc, HomeState, HomeState>(
+                selector: (state) => state,
+                builder: (context, state) {
+                  if (state.lastReadSurah.nama.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return _buildCard();
+                },
+              ),
               SizedBox(height: context.dh * 0.02),
               BlocSelector<HomeBloc, HomeState, HomeState>(
                 selector: (state) => state,
@@ -226,12 +237,17 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(
           'Quran Ease',
           style: context.text.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            showSearch(
+              context: context,
+              delegate: SurahSearchDelegate(_homeBloc.state.listSurah),
+            );
+          },
           child: Icon(
             Icons.search_rounded,
             color: context.greyText,
@@ -303,39 +319,39 @@ class _HomeScreenState extends State<HomeScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              MyRouter.routeDetailSurah,
+                              arguments: {
+                                'surah': _homeBloc.state.lastReadSurah,
+                              },
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.white,
+                            ),
+                            child: Text(
+                              'Continue',
+                              style: context.text.bodySmall?.copyWith(
+                                color: context.primary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
                       ],
                     );
                   },
                 ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      MyRouter.routeDetailSurah,
-                      arguments: {
-                        'surah': _homeBloc.state.lastReadSurah,
-                      },
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Colors.white,
-                    ),
-                    child: Text(
-                      'Continue',
-                      style: context.text.bodySmall?.copyWith(
-                        color: context.primary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                )
               ],
             ),
           ),

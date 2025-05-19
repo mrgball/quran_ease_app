@@ -21,7 +21,7 @@ class SplashScreen extends StatelessWidget {
             Text(
               'Quran Ease',
               style: context.text.bodyLarge?.copyWith(
-                fontSize: 40,
+                fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: context.primary,
               ),
@@ -30,7 +30,7 @@ class SplashScreen extends StatelessWidget {
             Text(
               'Learn Quran and Recite Everyday',
               style: context.text.bodyLarge?.copyWith(
-                fontSize: 18,
+                fontSize: 16,
                 color: context.greyText,
               ),
             ),
