@@ -244,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCard() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-      height: context.dh * 0.20,
+      height: context.dh * 0.22,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),

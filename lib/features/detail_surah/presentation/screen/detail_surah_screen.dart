@@ -220,7 +220,7 @@ class _DetailSurahScreenState extends State<DetailSurahScreen> {
                               icon: Icon(
                                 (value == key) ? Icons.stop : Icons.play_arrow,
                                 color: (value == key)
-                                    ? Colors.grey
+                                    ? Colors.red
                                     : context.primary,
                               ),
                               onPressed: () => _playAudio(key, url),
